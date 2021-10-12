@@ -173,6 +173,14 @@ public class BuildMode : Mode
 
         newWall.GetComponent<BuildObject>().Init();
 
+        // make wall longer if diagonal
+        if ((Mathf.Abs(currPos.x - lastPoint.x).Equals(currPos.z - lastPoint.z)))
+        {
+            Vector3 newScale = newWall.transform.localScale;
+            newScale.z = 0.75f;
+            newWall.transform.localScale = newScale;
+        }
+
         currWalls.Add(newWall);
 
         lastPoint = currPos;

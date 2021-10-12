@@ -9040,7 +9040,7 @@ GameObject:
   - component: {fileID: 1315073277}
   - component: {fileID: 1315073278}
   m_Layer: 5
-  m_Name: COLOUR MODE
+  m_Name: COLOUR TIPS
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
