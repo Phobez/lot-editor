@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 /// <summary>
 /// Mode to place, rotate, and delete furniture objects.
@@ -93,6 +94,13 @@ public class FurnitureMode : Mode
     {
         if (Input.GetMouseButtonDown(0) && !isOverUI)
         {
+            Collider[] hitColliders = Physics.OverlapSphere(currPlaceableObj.transform.localPosition, 0.2f, LayerMask.GetMask("Wall", "Door Wall", "Object"));
+
+            if (hitColliders.Length > 1)
+            {
+                Debug.LogWarning("Cannot place there: There is already another object.");
+                return;
+            }
             currPlaceableObj.GetComponent<BuildObject>().Init();
             currPlaceableObj = null;
         }
