@@ -4,7 +4,7 @@
   <h1 align="center">Lot Editor</h1>
 
   <p align="center">
-    A Sims-style 3D Lot Eidotr
+    A Sims-style 3D Lot Editor
     <br />
     <br />
     <a href="https://github.com/Phobez/lot-editor/issues">Report Bug</a>
