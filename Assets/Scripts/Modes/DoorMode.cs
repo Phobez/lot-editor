@@ -30,11 +30,7 @@ public class DoorMode : Mode
     {
         if (isActive)
         {
-            if (currPlaceableObj == null)
-            {
-                currPlaceableObj = Instantiate(placeableObjPrefab);
-                currPlaceableObj.transform.SetPositionAndRotation(new Vector3(currPlaceableObj.transform.localPosition.x, currPlaceableObj.transform.localPosition.y, currPlaceableObj.transform.localPosition.z), Quaternion.identity);
-            }
+            if (currPlaceableObj == null) currPlaceableObj = Instantiate(placeableObjPrefab);
 
             ray = cam.ScreenPointToRay(Input.mousePosition);
 
@@ -44,20 +40,11 @@ public class DoorMode : Mode
                 // deactive the floating door
                 if (currPlaceableObj.activeInHierarchy) currPlaceableObj.SetActive(false);
 
-                // instantiate or set active the door wall
-                if (currDoorWall == null) currDoorWall = Instantiate(doorWallPrefab);
-                else if (!currDoorWall.activeInHierarchy) currDoorWall.SetActive(true);
-
-                // if there is no current wall OR the current door wall's position is not at the wall
-                if (!currWall || !currDoorWall.transform.localPosition.Equals(currWall.transform.localPosition))
+                if (!hitInfo.collider.GetComponent<BuildObject>().IsHighlighted)
                 {
-                    // if there is a current wall, set it to true
-                    if (currWall) currWall.SetActive(true);
-
-                    // replaces the current wall with a door wall
+                    if (currWall) currWall.GetComponent<BuildObject>().Dehighlight();
                     currWall = hitInfo.collider.gameObject;
-                    currDoorWall.transform.SetPositionAndRotation(currWall.transform.localPosition, currWall.transform.localRotation);
-                    currWall.SetActive(false);
+                    currWall.GetComponent<BuildObject>().Highlight();
                 }
 
                 ReleaseIfClicked();
@@ -68,11 +55,8 @@ public class DoorMode : Mode
                 // turn on the floating door
                 if (!currPlaceableObj.activeInHierarchy) currPlaceableObj.SetActive(true);
 
-                // turn off the door wall
-                if (currDoorWall) currDoorWall.SetActive(false);
-
                 // turn on the wall
-                if (currWall) currWall.SetActive(true);
+                if (currWall && currWall.GetComponent<BuildObject>().IsHighlighted) currWall.GetComponent<BuildObject>().Dehighlight();
 
                 MoveCurrPlaceableObjToMouse();
             }
@@ -86,6 +70,8 @@ public class DoorMode : Mode
     {
         if (Input.GetMouseButtonDown(0))
         {
+            currDoorWall = Instantiate(doorWallPrefab);
+            currDoorWall.transform.SetPositionAndRotation(currWall.transform.localPosition, currWall.transform.localRotation);
             Destroy(currWall);
             currWall = null;
             currDoorWall.GetComponent<BuildObject>().Init();
@@ -104,7 +90,8 @@ public class DoorMode : Mode
 
         if (Physics.Raycast(ray, out hitInfo, 1000f, LayerMask.GetMask("Ground")))
         {
-            currPlaceableObj.transform.localPosition = hitInfo.point;
+            Vector3 newPos = new Vector3(hitInfo.point.x, hitInfo.point.y + 0.5f, hitInfo.point.z);
+            currPlaceableObj.transform.localPosition = newPos;
             currPlaceableObj.transform.localRotation = Quaternion.FromToRotation(Vector3.up, hitInfo.normal);
         }
     }
@@ -113,6 +100,7 @@ public class DoorMode : Mode
     // See Mode.Deactivate()
     protected override void Deactivate()
     {
+        base.Deactivate();
         Destroy(currPlaceableObj);
         Destroy(currDoorWall);
     }
